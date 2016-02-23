@@ -5,7 +5,7 @@ import java.util.Properties
 
 class SparkConfig {
 
-  var master: String = "local[*]"
+  var master: String = "local[4]"
 
   def load(file: InputStream): Unit = {
     val props: Properties = new Properties()
