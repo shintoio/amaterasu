@@ -3,9 +3,10 @@ package io.shinto.amaterasu.execution.actions.runners.spark
 import java.io.{ ByteArrayOutputStream, File, BufferedReader, PrintWriter }
 
 import io.shinto.amaterasu.configuration.SparkConfig
-import org.apache.spark.{ SparkConf, SparkContext }
+import org.apache.spark.{ SparkContext, SparkConf }
 import org.apache.spark.repl.{ Main }
 
+import scala.collection.mutable
 import scala.io.Source
 import scala.tools.nsc.Settings
 import scala.tools.nsc.interpreter.IMain
@@ -17,7 +18,7 @@ class SparkScalaRunner {
   var actionName: String = null
   var jobId: String = null
   val settings = new Settings()
-  var interpreter: IMain = new IMain()
+  var interpreter: IMain = null
 
   def execute(
     file: String,
@@ -26,15 +27,19 @@ class SparkScalaRunner {
   ): Unit = {
 
     // setting up some context :)
-    //val x = repl.interpret("@transient var _contextStore: Map[String, AnyRef] = Map[String, AnyRef]()")
-    val binderDefinition = interpreter.interpret("@transient var _binder = Map[String, AnyRef]()")
-    val contextStore = interpreter.valueOfTerm("_binder").orNull.asInstanceOf[Map[String, AnyRef]]
+    val sc = createSparkContext()
 
-    contextStore + ("sc" -> createSparkContext())
+    interpreter.interpret("var _contextStore = scala.collection.mutable.Map[String, AnyRef]()")
+    val contextStore = interpreter.prevRequestList.last.lineRep.call("$result").asInstanceOf[mutable.Map[String, AnyRef]]
 
-    println("::::::::::::::::::::::::::::::::::::")
     println(contextStore)
-    println(binderDefinition)
+
+    contextStore.put("sc", sc)
+    interpreter.interpret("println(_contextStore)")
+    println("+++++++++++++++++++++++")
+    interpreter.interpret("val sc = _contextStore(\"sc\")")
+
+    // println(binderDefinition)
 
     for (line <- Source.fromFile(file).getLines()) {
 
@@ -55,23 +60,13 @@ class SparkScalaRunner {
 
   def createSparkContext(): SparkContext = {
 
-    val conf = new SparkConf(false)
+    val conf = new SparkConf(true)
       .setMaster(config.master)
       .setAppName(s"${jobId}_$actionName")
       .set("spark.repl.class.uri", Main.getClass().getName) //TODO: :\ check this
 
-    var ctx: SparkContext = null
-    try {
-
-      ctx = new SparkContext(conf)
-    }
-    catch {
-      case e: Exception => println(s"------------$e")
-    }
-    ctx
-
+    new SparkContext(conf)
   }
-
 }
 
 object SparkScalaRunner {

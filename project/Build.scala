@@ -53,9 +53,9 @@ object Build extends Build {
       // execution engines dependencies
       "org.apache.spark" %% "spark-repl" % "1.6.0" % "provided",
 
-      "org.eclipse.jetty" % "jetty-server" % "9.3.6.v20151106",
-      "org.eclipse.jetty" % "jetty-util" % "9.3.6.v20151106",
-      "org.eclipse.jetty" % "jetty-http" % "9.3.6.v20151106",
+//      "org.eclipse.jetty" % "jetty-server" % "9.3.6.v20151106",
+//      "org.eclipse.jetty" % "jetty-util" % "9.3.6.v20151106",
+//      "org.eclipse.jetty" % "jetty-http" % "9.3.6.v20151106",
 
 //      "org.scala-lang" % "scala-compiler" % SCALA_VERSION,
 //      "org.scala-lang" % "scala-reflect" % SCALA_VERSION,
