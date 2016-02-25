@@ -21,7 +21,9 @@ class ActionsExecutor extends Executor with Logging {
 
   override def frameworkMessage(driver: ExecutorDriver, data: Array[Byte]): Unit = ???
 
-  override def registered(driver: ExecutorDriver, executorInfo: ExecutorInfo, frameworkInfo: FrameworkInfo, slaveInfo: SlaveInfo): Unit = ???
+  override def registered(driver: ExecutorDriver, executorInfo: ExecutorInfo, frameworkInfo: FrameworkInfo, slaveInfo: SlaveInfo): Unit = {
+
+  }
 
   override def launchTask(driver: ExecutorDriver, task: TaskInfo): Unit = {
 

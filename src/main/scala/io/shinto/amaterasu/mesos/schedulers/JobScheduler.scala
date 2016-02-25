@@ -115,9 +115,10 @@ class JobScheduler extends AmaterasuScheduler {
             .setName(taskId.getValue)
             .setExecutorId(ExecutorID.newBuilder().setValue("1234"))
             .setCommand(command)
-            .addResources(createScalarResource("cpus", config.Jobs.Tasks.cpus))
-            .addResources(createScalarResource("mem", config.Jobs.Tasks.mem))
-
+          //            .addResources(createScalarResource("cpus", config.Jobs.Tasks.cpus))
+          //            .addResources(createScalarResource("mem", config.Jobs.Tasks.mem))
+          //            .addResources(createScalarResource("disk", config.Jobs.repoSize))
+          //
           // building the task to execute the action
           val actionTask = TaskInfo
             .newBuilder
@@ -125,8 +126,12 @@ class JobScheduler extends AmaterasuScheduler {
             .setTaskId(taskId)
             .setSlaveId(offer.getSlaveId)
             .setExecutor(executor)
-            //.setData()
+            .addResources(createScalarResource("cpus", config.Jobs.Tasks.cpus))
+            .addResources(createScalarResource("mem", config.Jobs.Tasks.mem))
+            .addResources(createScalarResource("disk", config.Jobs.repoSize))
             .build()
+
+          println(":::::::::::::::::::: launching :::::::::::::::::::::")
 
           driver.launchTasks(Collections.singleton(offer.getId), Collections.singleton(actionTask))
         }
