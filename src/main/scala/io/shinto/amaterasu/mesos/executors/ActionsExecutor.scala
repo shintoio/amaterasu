@@ -32,16 +32,22 @@ class ActionsExecutor extends Executor with Logging {
       .setState(TaskState.TASK_RUNNING).build()
 
     driver.sendStatusUpdate(status)
-
+    Thread.sleep(100000)
     val fileName = task.getData.toString
 
   }
 
-  def main(args: Array[Nothing]) {
+}
+
+object ActionsExecutorLauncher extends Logging {
+
+  def main(args: Array[String]) {
 
     log.debug("Starting executor ------->")
     val driver = new MesosExecutorDriver(new ActionsExecutor)
-    System.exit(if (driver.run eq Status.DRIVER_STOPPED) 0 else 1)
+    driver.run()
+    //System.exit(if (driver.run eq Status.DRIVER_STOPPED) 0 else 1)
 
   }
+
 }
