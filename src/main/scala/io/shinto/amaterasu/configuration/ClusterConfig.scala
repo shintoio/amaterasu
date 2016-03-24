@@ -1,14 +1,17 @@
 package io.shinto.amaterasu.configuration
 
-import java.io.{ File, InputStream }
+import java.io.{File, InputStream}
 import java.nio.file.Paths
 import java.util.Properties
 
 import io.shinto.amaterasu.Logging
 
+import scala.io.Source
+
 class ClusterConfig extends Logging {
 
-  val DEFAULT_FILE = getClass().getResourceAsStream("/amaterasu.properties")
+  val DEFAULT_FILE = getClass.getResourceAsStream("/amaterasu.properties")
+  var file:InputStream = null
 
   var user: String = ""
   var zk: String = ""
@@ -83,8 +86,25 @@ class ClusterConfig extends Logging {
     }
   }
 
+  object git {
+
+    var repo: String = ""
+    var user: String = ""
+    var password: String = ""
+
+    def load(props: Properties): Unit = {
+      if (props.containsKey("git.repo")) user = props.getProperty("git.password")
+      if (props.containsKey("git.user")) user = props.getProperty("git.user")
+      if (props.containsKey("git.password")) password = props.getProperty("git.password")
+    }
+  }
+
   def load(): Unit = {
-    load(DEFAULT_FILE)
+    if (file == null) {
+      load(DEFAULT_FILE)
+    } else {
+      load(file)
+    }
   }
 
   def load(file: InputStream): Unit = {
@@ -119,8 +139,8 @@ class ClusterConfig extends Logging {
 
     }
     AWS.load(props)
+    git.load(props)
   }
-
 }
 
 object ClusterConfig {
@@ -128,6 +148,15 @@ object ClusterConfig {
   def apply(): ClusterConfig = {
 
     val config = new ClusterConfig()
+    config.load()
+
+    config
+  }
+
+  def apply(cfgFile: InputStream): ClusterConfig = {
+
+    val config = new ClusterConfig()
+    config.file = cfgFile
     config.load()
 
     config

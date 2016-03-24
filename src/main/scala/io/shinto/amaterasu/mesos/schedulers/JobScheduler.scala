@@ -171,8 +171,8 @@ object JobScheduler {
   def apply(src: String, branch: String, config: ClusterConfig): JobScheduler = {
 
     val scheduler = new JobScheduler()
-    scheduler.src = src
-    scheduler.branch = branch
+    scheduler.src = config.git.repo
+    scheduler.branch = branch //todo should this be in props?
 
     val retryPolicy = new ExponentialBackoffRetry(1000, 3)
     scheduler.client = CuratorFrameworkFactory.newClient(config.zk, retryPolicy)
