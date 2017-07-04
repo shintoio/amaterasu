@@ -1,4 +1,4 @@
-package io.shinto.amaterasu.common.execution.actions.runners.spark
+package io.shinto.amaterasu.executor.execution.actions.runners.spark
 
 import java.io.File
 
@@ -6,8 +6,7 @@ import io.shinto.amaterasu.common.execution.actions.Notifier
 import io.shinto.amaterasu.common.logging.Logging
 import io.shinto.amaterasu.common.runtime.Environment
 import org.apache.commons.io.FilenameUtils
-import org.apache.spark.SparkContext
-import org.apache.spark.sql.{DataFrame, SQLContext, SaveMode, SparkSession}
+import org.apache.spark.sql.{SparkSession, SaveMode,DataFrame}
 
 /**
   * Created by kirupa on 11/12/16.
@@ -19,12 +18,11 @@ class SparkSqlRunner extends Logging {
   var notifier: Notifier = _
   var jobId: String = _
   var actionName: String = _
-  var sc: SparkContext = _
   var spark: SparkSession = _
 
   def executeQuery(sparkSqlTempTable: String,
-                    dataSource: String,
-                    query: String) = {
+                   dataSource: String,
+                   query: String) = {
 
     notifier.info(s"================= started action $actionName =================")
     val file: File = new File(dataSource)
@@ -75,7 +73,7 @@ object SparkSqlRunner {
             jobId: String,
             actionName: String,
             notifier: Notifier,
-            sc: SparkContext): SparkSqlRunner = {
+            spark: SparkSession): SparkSqlRunner = {
 
     val sparkSqlRunnerObj = new SparkSqlRunner
 
@@ -83,8 +81,7 @@ object SparkSqlRunner {
     sparkSqlRunnerObj.jobId = jobId
     sparkSqlRunnerObj.actionName = actionName
     sparkSqlRunnerObj.notifier = notifier
-    sparkSqlRunnerObj.sc = sc
-    sparkSqlRunnerObj.spark = SparkSession.builder().config(sc.getConf).enableHiveSupport().getOrCreate()
+    sparkSqlRunnerObj.spark = spark
     sparkSqlRunnerObj
   }
 }
